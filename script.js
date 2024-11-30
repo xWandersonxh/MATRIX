@@ -1,6 +1,6 @@
 const studentForm = document.getElementById('studentForm');
 const studentTable = document.getElementById('studentTable');
-let students = [];
+let students = JSON.parse(localStorage.getItem('students')) || []; // Carrega dados do Local Storage
 
 // Função para calcular a média
 function calculateAverage(grades) {
@@ -40,6 +40,7 @@ function updateTable() {
       const grade = parseFloat(newGrade);
       if (!isNaN(grade) && grade >= 0 && grade <= 10) {
         student.grades.push(grade);
+        saveStudents();
         updateTable();
       } else {
         alert('Por favor, insira uma nota válida entre 0 e 10.');
@@ -52,6 +53,7 @@ function updateTable() {
     deleteButton.classList.add('delete');
     deleteButton.addEventListener('click', () => {
       students.splice(index, 1);
+      saveStudents();
       updateTable();
     });
 
@@ -65,6 +67,11 @@ function updateTable() {
 
     studentTable.appendChild(row);
   });
+}
+
+// Salva os alunos no Local Storage
+function saveStudents() {
+  localStorage.setItem('students', JSON.stringify(students));
 }
 
 // Adiciona um aluno com nota
@@ -81,9 +88,13 @@ studentForm.addEventListener('submit', (e) => {
       students.push(student);
     }
     student.grades.push(grade);
+    saveStudents();
     updateTable();
     studentForm.reset();
   } else {
     alert('Por favor, preencha todos os campos corretamente.');
   }
 });
+
+// Inicializa a tabela ao carregar a página
+updateTable();
